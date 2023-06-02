@@ -144,16 +144,16 @@ $driver->findElement(WebDriverBy::name('upload'))->submit();
  */
 $parser = new \Smalot\PdfParser\Parser();
 $pdf = $parser->parseFile('/var/www/html/rpa-lima/Leitura PDF.pdf');
-$text = $pdf->getText();
+$text  = $pdf->getText();
+$dadosPDF = explode(',',$text);
 
-foreach ($text as $value) {
+foreach ($dadosPDF as $value) {
     echo $value;
 }
-
 
 /**
  * fecha o browser
  */
-//$driver->close();
+$driver->close();
 
   
