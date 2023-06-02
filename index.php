@@ -74,7 +74,7 @@ $datas = [
 /**
  * Inserir dos dados
  */
-//$database->ConnInsert($datas);
+$database->ConnInsert($datas);
 
 
 /**
