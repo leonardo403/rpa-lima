@@ -1,6 +1,7 @@
 {
     "require": {
-        "php-webdriver/webdriver": "^1.13"
+        "php-webdriver/webdriver": "^1.13",
+        "smalot/pdfparser": "^2.5"
     },
     "autoload": {
         "psr-4": {

@@ -6,8 +6,6 @@ use Facebook\WebDriver\Remote\RemoteWebDriver; //chamada à classe de WebDriver
 use Facebook\WebDriver\Chrome\ChromeOptions;
 
 use App\database\Connection;
-use Facebook\WebDriver\Interactions\Touch\WebDriverDownAction;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 
 //definindo o cabeçalho para utf-8
 header("Content-type: text/html; charset=utf-8");
@@ -26,6 +24,11 @@ $url = 'https://testpages.herokuapp.com/styled/tag/table.html';
  * Host default
  */
 $host = 'http://localhost:4444/wd/hub'; 
+
+
+//$options = new ChromeOptions();
+//$options = $options->setExperimentalOption('download.default_directory', '/home/leonardo/Documentos');
+//$options->setExperimentalOption("prefs", $options);
 
 
 /**
@@ -120,17 +123,37 @@ $driver->findElement(WebDriverBy::name('submitbutton'))->submit();
 /**
  * Baixar o arquivo através do link
  */
-$options = new ChromeOptions();
-$options = $options->setExperimentalOption('download.default_directory', '/tmp');
-$options->setExperimentalOption("prefs", $options);
+
 
 $driver->get("https://testpages.herokuapp.com/styled/download/download.html");
 
-$driver->findElement(WebDriverBy::linkText("textfile.txt"))->click();
+$fileName = $driver->findElement(WebDriverBy::linkText('Direct Link Download'))->click();
+rename('/home/leonardo/Downloads/textfile.txt', '/home/leonardo/Downloads/Teste TKS.txt');
+
+
+$driver->get("https://testpages.herokuapp.com/styled/file-upload-test.html");
+$fileTXT = $driver->findElement(WebDriverBy::name("filename"))->sendKeys('/home/leonardo/Downloads/Teste TKS.txt');
+
+$radiobutton = $driver->findElement(WebDriverBy::name("filetype"));
+$radio = new WebDriverRadios($radiobutton);
+$radio->selectByValue('text');
+$driver->findElement(WebDriverBy::name('upload'))->submit();
+
+/**
+ * Ler PDF
+ */
+$parser = new \Smalot\PdfParser\Parser();
+$pdf = $parser->parseFile('/var/www/html/rpa-lima/Leitura PDF.pdf');
+$text = $pdf->getText();
+
+foreach ($text as $value) {
+    echo $value;
+}
+
 
 /**
  * fecha o browser
  */
-$driver->close();
+//$driver->close();
 
   
