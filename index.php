@@ -1,18 +1,23 @@
 <?php
 namespace Facebook\WebDriver;
 
-use Facebook\WebDriver\Remote\DesiredCapabilities; //chamada à classe de drivers
-use Facebook\WebDriver\Remote\RemoteWebDriver; //chamada à classe de WebDriver
-use Facebook\WebDriver\Chrome\ChromeOptions;
-
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver; 
 use App\database\Connection;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 //definindo o cabeçalho para utf-8
 header("Content-type: text/html; charset=utf-8");
 
+
 require_once 'vendor/autoload.php';
 
 $database = new Connection();
+$spreadsheet = new Spreadsheet();
+$sheet = $spreadsheet->getActiveSheet();
+
 
 /**
  * capturar todas as informações exibidas
@@ -25,16 +30,10 @@ $url = 'https://testpages.herokuapp.com/styled/tag/table.html';
  */
 $host = 'http://localhost:4444/wd/hub'; 
 
-
-//$options = new ChromeOptions();
-//$options = $options->setExperimentalOption('download.default_directory', '/home/leonardo/Documentos');
-//$options->setExperimentalOption("prefs", $options);
-
-
 /**
  * o driver como chrome
  */
-$capabilities = DesiredCapabilities::chrome(); 
+$capabilities = DesiredCapabilities::chrome();
 
 /**
  * criando uma conexão com o webdriver
@@ -123,8 +122,6 @@ $driver->findElement(WebDriverBy::name('submitbutton'))->submit();
 /**
  * Baixar o arquivo através do link
  */
-
-
 $driver->get("https://testpages.herokuapp.com/styled/download/download.html");
 
 $fileName = $driver->findElement(WebDriverBy::linkText('Direct Link Download'))->click();
@@ -132,7 +129,7 @@ rename('/home/leonardo/Downloads/textfile.txt', '/home/leonardo/Downloads/Teste 
 
 
 $driver->get("https://testpages.herokuapp.com/styled/file-upload-test.html");
-$fileTXT = $driver->findElement(WebDriverBy::name("filename"))->sendKeys('/home/leonardo/Downloads/Teste TKS.txt');
+$driver->findElement(WebDriverBy::name("filename"))->sendKeys('/home/leonardo/Downloads/Teste TKS.txt');
 
 $radiobutton = $driver->findElement(WebDriverBy::name("filetype"));
 $radio = new WebDriverRadios($radiobutton);
@@ -144,12 +141,16 @@ $driver->findElement(WebDriverBy::name('upload'))->submit();
  */
 $parser = new \Smalot\PdfParser\Parser();
 $pdf = $parser->parseFile('/var/www/html/rpa-lima/Leitura PDF.pdf');
-$text  = $pdf->getText();
-$dadosPDF = explode(',',$text);
 
-foreach ($dadosPDF as $value) {
-    echo $value;
+$paginas = $pdf->getPages();
+
+foreach ($paginas as $pagina) {
+    $dadosPDF [] =  $pagina->getText() . PHP_EOL;    
 }
+
+$sheet->fromArray($dadosPDF, null, 'A2');
+$writer = new Xlsx($spreadsheet);
+$writer->save('teste.xlsx');
 
 /**
  * fecha o browser
